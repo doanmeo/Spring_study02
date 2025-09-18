@@ -2,8 +2,12 @@ package com.hocSpring.bai_01.dtoRequest;
 
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.Size;
+
 public class UserCreationRequest {
+    @Size(min = 3, message = "USER_NAME_INVALID")
     private String username;
+    @Size(min = 6, message = "PASSWORD_INVALID")
     private String password;
     private String firstName;
     private String lastName;

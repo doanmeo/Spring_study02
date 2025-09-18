@@ -6,4 +6,5 @@ import com.hocSpring.bai_01.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     // custom query methods if needed
+    boolean existsByUsername(String username);  
 }

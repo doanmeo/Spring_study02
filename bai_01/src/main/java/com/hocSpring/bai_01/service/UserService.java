@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.hocSpring.bai_01.dtoRequest.UserCreationRequest;
 import com.hocSpring.bai_01.dtoRequest.UserUpdateRequest;
 import com.hocSpring.bai_01.entity.User;
+import com.hocSpring.bai_01.exception.AppException;
+import com.hocSpring.bai_01.exception.ErrorCode;
 import com.hocSpring.bai_01.repository.UserRepository;
 
 @Service
@@ -17,6 +19,9 @@ public class UserService {
 
     public User createRequest(UserCreationRequest request) {
         User user = new User();
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new AppException(ErrorCode.User_Exists);
+        }
 
         user.setUsername(request.getUsername());
         user.setPassword(request.getPassword());
@@ -30,11 +35,14 @@ public class UserService {
     public List<User> getUsers() {
         return userRepository.findAll();
     }
+
     public User getUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
     }
+
     public User updateUser(Long userId, UserUpdateRequest request) {
-       
+
         User existingUser = getUserById(userId);
         existingUser.setPassword(request.getPassword());
         existingUser.setFirstName(request.getFirstName());
@@ -42,6 +50,7 @@ public class UserService {
         existingUser.setDateOfBirth(request.getDateOfBirth());
         return userRepository.save(existingUser);
     }
+
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }

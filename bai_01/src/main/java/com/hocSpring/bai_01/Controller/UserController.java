@@ -5,10 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hocSpring.bai_01.dtoRequest.ApiResponse;
 import com.hocSpring.bai_01.dtoRequest.UserCreationRequest;
 import com.hocSpring.bai_01.dtoRequest.UserUpdateRequest;
 import com.hocSpring.bai_01.entity.User;
 import com.hocSpring.bai_01.service.UserService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,9 +28,13 @@ public class UserController {
     private UserService userService;
 
     @PostMapping
-    public User createUser(@RequestBody UserCreationRequest request) {
-        return userService.createRequest(request);
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) { 
+        ApiResponse<User> apiResponse = new ApiResponse<>();
 
+        apiResponse.setResult(userService.createRequest(request));
+        
+        
+        return apiResponse;
     }
 
     @GetMapping
