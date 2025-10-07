@@ -5,9 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.hocSpring.bai_01.dtoRequest.ApiResponse;
-import com.hocSpring.bai_01.dtoRequest.UserCreationRequest;
-import com.hocSpring.bai_01.dtoRequest.UserUpdateRequest;
+import com.hocSpring.bai_01.dto.Request.ApiResponse;
+import com.hocSpring.bai_01.dto.Request.UserCreationRequest;
+import com.hocSpring.bai_01.dto.Request.UserUpdateRequest;
+import com.hocSpring.bai_01.dto.Respond.UserRespond;
 import com.hocSpring.bai_01.entity.User;
 import com.hocSpring.bai_01.service.UserService;
 
@@ -43,13 +44,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    User getUser(@PathVariable("userId") Long userId) {
-
+    UserRespond getUser(@PathVariable("userId") Long userId) {
         return userService.getUserById(userId);
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@RequestBody UserUpdateRequest request, @PathVariable("userId") Long userId) {
+    UserRespond updateUser(@RequestBody UserUpdateRequest request, @PathVariable("userId") Long userId) {
         return userService.updateUser(userId, request);
     }
 

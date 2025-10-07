@@ -5,7 +5,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.hocSpring.bai_01.dtoRequest.ApiResponse;
+import com.hocSpring.bai_01.dto.Request.ApiResponse;
 
 @ControllerAdvice
 public class GlobalException {
