@@ -14,18 +14,17 @@ import lombok.experimental.FieldDefaults;
 // @Getter
 // @Setter
 @Data // dung de tao getter setter toString hashCode equals
-@Builder// dung de khoi tao doi tuong va gan gia tri nhanh gon hon
+@Builder // dung de khoi tao doi tuong va gan gia tri nhanh gon hon
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE) // dat tat ca cac truong trong lop la private
 public class UserCreationRequest {
     @Size(min = 3, message = "USER_NAME_INVALID")
-     String username;
+    String username;
     @Size(min = 6, message = "PASSWORD_INVALID")
-     String password;
-     String firstName;
-     String lastName;
-     LocalDate dateOfBirth;
+    String password;
+    String firstName;
+    String lastName;
+    LocalDate dateOfBirth;
 
-   
 }

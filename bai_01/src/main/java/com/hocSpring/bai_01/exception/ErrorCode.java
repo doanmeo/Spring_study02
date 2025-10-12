@@ -7,7 +7,9 @@ public enum ErrorCode {
     User_Exists(1001, "User already exists"),
     Invalid_KEY(1004, "Invalid message key for validation"),
     USER_NAME_INVALID(1002, "Username must be at least 3 characters long"),
-    PASSWORD_INVALID(1003, "Password must be at least 6 characters long");
+    PASSWORD_INVALID(1003, "Password must be at least 6 characters long"),
+    USER_NOT_EXISTS(1005, "User not exists"),
+    UN_AUTHENTICATED(1006, "User is not authenticated");
 
     private int code;
     private String message;
