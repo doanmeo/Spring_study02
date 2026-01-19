@@ -3,6 +3,7 @@ package bai02.example.demo.service;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,8 +39,8 @@ public class AuthenticationService {
 
     UserRepository userRepository;// laays danh sach user tu UserRepository
     @NonFinal
-    protected static final String SECRET_KEY = "ef03bad871c220f440e6975a1427d0aa6b3b1bfbcd9341016505cdda3dbee331";
-
+    @Value("${jwt.signerKey}")
+    protected  String SECRET_KEY;
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.User_Not_Existed));
