@@ -1,7 +1,11 @@
 package bai02.example.demo.service;
 
+import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,6 +14,7 @@ import bai02.example.demo.dto.request.UserCreationRequest;
 import bai02.example.demo.dto.request.UserUpdateRequest;
 import bai02.example.demo.dto.response.UserResponse;
 import bai02.example.demo.entity.User;
+import bai02.example.demo.enums.Role;
 import bai02.example.demo.exception.AppException;
 import bai02.example.demo.exception.ErrorCode;
 import bai02.example.demo.mapper.UserMapper;
@@ -44,17 +49,30 @@ public class UserService {
         // user.setFirstName(request.getFirstName());
         // user.setLastName(request.getLastName());
         // user.setDob(request.getDob());
-
+        HashSet<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+        user.setRoles(roles);   
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')") 
     public List<User> getUsers() {
         return userRepository.findAll();
     }
 
+    @PostAuthorize("returnObject.username == authentication.name or hasRole('ADMIN')")
     public UserResponse getUserById(String userid) {
         return userMapper.toUserResponse(userRepository.findById(userid)
                 .orElseThrow(() -> new RuntimeException("User not found")));
+    }
+
+    public UserResponse getMyInfo() {
+       var context = SecurityContextHolder.getContext(); // Lấy ngữ cảnh bảo mật hiện tại
+       String username = context.getAuthentication().getName(); // Lấy thông tin xác thực từ ngữ cảnh
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toUserResponse(user);// Chuyển đổi thực thể User thành UserResponse và trả về kết quả
+
     }
 
     public UserResponse updateUser(UserUpdateRequest request, String userid) {

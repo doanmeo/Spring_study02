@@ -2,12 +2,14 @@ package bai02.example.demo.service;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.StringJoiner;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -25,6 +27,7 @@ import bai02.example.demo.dto.request.AuthenticationRequest;
 import bai02.example.demo.dto.request.IntrospectRequest;
 import bai02.example.demo.dto.response.AuthenticationResponse;
 import bai02.example.demo.dto.response.IntrorespectResponse;
+import bai02.example.demo.entity.User;
 import bai02.example.demo.exception.AppException;
 import bai02.example.demo.exception.ErrorCode;
 import bai02.example.demo.repository.UserRepository;
@@ -40,7 +43,8 @@ public class AuthenticationService {
     UserRepository userRepository;// laays danh sach user tu UserRepository
     @NonFinal
     @Value("${jwt.signerKey}")
-    protected  String SECRET_KEY;
+    protected String SECRET_KEY;
+
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.User_Not_Existed));
@@ -49,23 +53,23 @@ public class AuthenticationService {
         if (!isAuthenticated) {
             throw new AppException(ErrorCode.Invalid_Credentials);
         }
-        String token = generateJwtToken(request.getUsername());
+        var token = generateJwtToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(isAuthenticated)
                 .build();
     }
 
-    private String generateJwtToken(String username) {
+    private String generateJwtToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512); // Sử dụng thuật toán HS512 để mã hóa JWT
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(username) // đặt chủ đề của token là tên người dùng
+                .subject(user.getUsername()) // đặt chủ đề của token là tên người dùng
                 .issuer("your-app-name")// đặt nhà phát hành của token là tên ứng dụng
                 .issueTime(new Date()) // đặt thời gian phát hành của token là thời gian hiện tại
                 .expirationTime(new Date(new Date().getTime() + 60 * 60 * 1000)) // đặt thời gian hết hạn của token là 1
                                                                                  // giờ sau thời gian hiện tại
-                .claim("role", "USER") // claim: thêm thông tin vai trò người dùng vào token
+                .claim("scope", buildScopeString(user)) // claim: thêm thông tin vai trò người dùng vào token
                 .build();
         Payload payload = new Payload(claimsSet.toJSONObject());// chuyển đổi claimsSet thành định dạng JSON và tạo
                                                                 // payload cho token
@@ -84,6 +88,16 @@ public class AuthenticationService {
         }
 
         return null;
+    }
+
+    private String buildScopeString(User user) {
+        StringJoiner joiner = new StringJoiner(" ");// tạo một chuỗi với dấu cách phân tách
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(joiner::add);// thêm từng vai trò vào chuỗi với dấu cách phân tách Joiner:: add là
+                                                 // method reference trong Java 8 trở lên, tương đương với việc gọi
+                                                 // joiner.add(role) trong vòng lặp
+        }
+        return joiner.toString();
     }
 
     public IntrorespectResponse introspect(IntrospectRequest request) {

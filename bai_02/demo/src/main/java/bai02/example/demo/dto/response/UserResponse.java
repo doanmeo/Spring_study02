@@ -1,6 +1,7 @@
 package bai02.example.demo.dto.response;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +17,11 @@ import lombok.experimental.FieldDefaults;
 public class UserResponse {
      String id;
      String username;
-     String password;
+     // String password; // Thông thường không bao gồm mật khẩu trong phản hồi DTO
      String email;
      String firstName;
      String lastName;
      LocalDate dob;
+     Set<String> roles;
 
 }
